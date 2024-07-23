@@ -18,43 +18,45 @@ public class Callable {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             // Establish a connection to the database
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/School", "root", "Meet@123");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/book_store", "root", "Meet@123");
 
             sc = new Scanner(System.in);
 
-            System.out.print("Enter id for student: ");
+            System.out.print("Enter id for book: ");
             int id = sc.nextInt();
             sc.nextLine(); // Consume newline
 
-            System.out.print("Enter name for student: ");
-            String name = sc.nextLine();
+            System.out.print("Enter title for book: ");
+            String title = sc.nextLine();
 
-            System.out.print("Enter mobile no for student: ");
-            int phone = sc.nextInt();
+            System.out.print("Enter price for book: ");
+            int price = sc.nextInt();
+            sc.nextLine();
 
+            System.out.print("Enter author of book: ");
+            String author = sc.nextLine();
+            
             // Prepare the call to the stored procedure
-            String sql = "{CALL insertAndSelectStudent(?, ?, ?)}";
+            String sql = "{CALL InsertAndSelect(?, ?, ?, ?)}";
             callableStmt = connection.prepareCall(sql);
 
             // Set the parameters for the stored procedure
             callableStmt.setInt(1, id);
-            callableStmt.setString(2, name);
-            callableStmt.setInt(3, phone);
+            callableStmt.setString(2, title);
+            callableStmt.setInt(3, price);
+            callableStmt.setString(4, author);
 
             // Execute the stored procedure
             boolean hasResults = callableStmt.execute();
 
-            // Process the result set(s)
-            StringBuilder result = new StringBuilder();
+            System.out.println(hasResults);
+
             if (hasResults) {
                 rs = callableStmt.getResultSet();
                 while (rs.next()) {
-                    result.append(rs.getInt("id")).append(" ")
-                          .append(rs.getString("name")).append(" ")
-                          .append(rs.getInt("phone")).append("\n");
+                    System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getInt(3) + " " + rs.getString(4));
                 }
 
-                System.out.println(result);
             } else {
                 JOptionPane.showMessageDialog(null, "No data found", "Database Results", JOptionPane.INFORMATION_MESSAGE);
             }
